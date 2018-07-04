@@ -36,10 +36,10 @@ def crawl (prob_id):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser (description = 'Crawl & convert HTML problem statements on sjtuoj to pdf.')
-    parser.add_argument ("start_id", type = int, help = "The start ID of target problem(s)")
-    parser.add_argument ("stop_id", nargs = '?', type = int, help = "The stop ID (inclusive) of target problem(s)")
-    parser.add_argument ("-n", "--njobs", type = int, help = "Multi-tasks limit", default = 5)
-    parser.add_argument ("-z", "--zoom", type = float, help = "Zoom parameter", default = 1)
+    parser.add_argument ("start_id", type = int, help = "start ID of target problem(s)")
+    parser.add_argument ("stop_id", nargs = '?', type = int, help = "stop ID (inclusive) of target problem(s)")
+    parser.add_argument ("-n", "--njobs", type = int, help = "multi-thread limit (default = 5)", default = 5)
+    parser.add_argument ("-z", "--zoom", type = float, help = "zoom parameter (default = 1.0)", default = 1)
     args = parser.parse_args ()
 
     print ("Logining ...")
