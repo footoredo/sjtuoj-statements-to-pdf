@@ -10,7 +10,8 @@ A script to crawl & convert HTML statements on SJTUOJ.
 ## Usage
 
 ```
-usage: sjtuoj2pdf.py [-h] [-n NJOBS] [-z ZOOM] [-o OUTPUT] start_id [stop_id]
+usage: sjtuoj2pdf.py [-h] [-f FORMAT] [-n NJOBS] [-z ZOOM] [-o OUTPUT]
+                     start_id [stop_id]
 
 Crawl & convert HTML problem statements on sjtuoj to pdf.
 
@@ -20,6 +21,8 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
+  -f FORMAT, --format FORMAT
+                        format [html/pdf] (default = html)
   -n NJOBS, --njobs NJOBS
                         multi-thread limit (default = 5)
   -z ZOOM, --zoom ZOOM  zoom parameter (default = 1.0)
@@ -46,5 +49,11 @@ python sjtuoj2pdf.py --njobs 3 --output statements.pdf 8652 8662
 - Zoom the statements to 90%
 
 ```
-python sjtuoj2pdf --zoom 0.9 8652 
+python sjtuoj2pdf.py --zoom 0.9 8652 
+```
+
+- Crawl a pdf problems
+
+```
+python sjtuoj2pdf.py --format pdf 10207
 ```

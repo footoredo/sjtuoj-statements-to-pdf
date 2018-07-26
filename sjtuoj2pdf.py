@@ -1,6 +1,7 @@
 import pdfkit
 import argparse
 import requests
+import shutil
 from multiprocessing import Pool
 from PyPDF2 import PdfFileReader, PdfFileWriter
 
@@ -25,13 +26,13 @@ def merge (output_path, input_paths):
 sjtuoj = "https://sjtuoj.weak.cat"
 #sjtuoj = "http://176.16.45.6"
 
-username = ""
-password = ""
+username = "root"
+password = "ACMicpc2012"
 
 login_path = "/accounts/login/?next=/"
+session = requests.Session()
 
 def login ():
-    session = requests.Session ()
     result = session.get (sjtuoj)
     csrftoken = result.cookies['csrftoken']
     result = session.post (sjtuoj + login_path, 
@@ -43,19 +44,28 @@ def login ():
 def requests2wkhtmltopdf (cookies):
     return [(item[0], item[1]) for item in cookies.iteritems ()]
 
-statement = "/problems/{}/html/"
+statement = "/problems/{}/{}/"
 options = {
         'encoding': "utf-8"
         }
 output_dir = "output/"
 output = output_dir + "/{}.pdf"
 
-def crawl (prob_id):
-    url = sjtuoj + statement.format (prob_id)
-    pdfkit.from_url (url, output.format (prob_id), options = options)
+def crawl (prob):
+    prob_id, prob_format = prob
+    url = sjtuoj + statement.format (prob_id, prob_format)
+    filename = output.format (prob_id)
+    if prob_format == "html":
+        pdfkit.from_url (url, filename, options = options)
+    elif prob_format == "pdf":
+        r = session.get(url)
+        with open(filename, 'wb') as f:
+            f.write(r.content)
+            # shutil.copyfileobj(r.raw, f)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser (description = 'Crawl & convert HTML problem statements on sjtuoj to pdf.')
+    parser.add_argument ("-f", "--format", type = str, help = "format [html/pdf] (default = html)", default = "html")
     parser.add_argument ("start_id", type = int, help = "start ID of target problem(s)")
     parser.add_argument ("stop_id", nargs = '?', type = int, help = "stop ID (inclusive) of target problem(s)")
     parser.add_argument ("-n", "--njobs", type = int, help = "multi-thread limit (default = 5)", default = 5)
@@ -76,7 +86,7 @@ if __name__ == "__main__":
         r = [args.start_id]
 
     with Pool (args.njobs) as p:
-        p.map (crawl, r)
+        p.map (crawl, zip(r, [args.format for _ in r]))
 
     if args.output != None:
         merge (output_dir + args.output, list (map (output.format, r)))
